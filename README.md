@@ -2,11 +2,11 @@
 ![License](https://img.shields.io/github/license/foloup/foloup)
 [![Twitter Follow](https://img.shields.io/twitter/follow/SuveenE?style=social)](https://x.com/SuveenE)
 
-# FoloUp - AI-powered voice interviewer for hiring 💼
+# RecruitFlow - AI-powered voice interviewer for hiring 💼
 
-FoloUp is an open source platform for companies to conduct AI powered hiring interviews with their candidates.
+RecruitFlow is an open source platform for companies to conduct AI powered hiring interviews with their candidates.
 
-<img src="https://github.com/user-attachments/assets/fa92ade1-02ea-4332-b5ed-97056dea01c3" alt="FoloUp Logo" width="800">
+<img src="https://github.com/user-attachments/assets/fa92ade1-02ea-4332-b5ed-97056dea01c3" alt="RecruitFlow Logo" width="800">
 
 <div style="display: flex; flex-direction: row; gap: 20px; margin: 20px 0;">
   <picture>

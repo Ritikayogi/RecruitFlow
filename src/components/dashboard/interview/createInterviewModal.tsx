@@ -32,14 +32,6 @@ function CreateInterviewModal({ open, setOpen }: Props) {
   const [isUploaded, setIsUploaded] = useState(false);
   const [fileName, setFileName] = useState("");
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Need to check
-  useEffect(() => {
-    if (loading === true) {
-      setLoading(false);
-      setProceed(true);
-    }
-  }, [interviewData, loading]);
-
   useEffect(() => {
     if (!open) {
       setLoading(false);
@@ -62,6 +54,7 @@ function CreateInterviewModal({ open, setOpen }: Props) {
         <DetailsPopup
           open={open}
           setLoading={setLoading}
+          setProceed={setProceed}
           interviewData={interviewData}
           setInterviewData={setInterviewData}
           // Below for File Upload

@@ -9,15 +9,15 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  title: "FoloUp",
+  title: "RecruitFlow",
   description: "AI powered Interviews",
   openGraph: {
-    title: "FoloUp",
+    title: "RecruitFlow",
     description: "AI-powered Interviews",
-    siteName: "FoloUp",
+    siteName: "RecruitFlow",
     images: [
       {
-        url: "/foloup.png",
+        url: "/recruitflow.png",
         width: 800,
         height: 600,
       },
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/browser-user-icon.ico" />
       </head>

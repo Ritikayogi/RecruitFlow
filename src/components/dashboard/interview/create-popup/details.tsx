@@ -17,6 +17,7 @@ import FileUpload from "../fileUpload";
 interface Props {
   open: boolean;
   setLoading: (loading: boolean) => void;
+  setProceed: (proceed: boolean) => void;
   interviewData: InterviewBase;
   setInterviewData: (interviewData: InterviewBase) => void;
   isUploaded: boolean;
@@ -28,6 +29,7 @@ interface Props {
 function DetailsPopup({
   open,
   setLoading,
+  setProceed,
   interviewData,
   setInterviewData,
   isUploaded,
@@ -67,35 +69,44 @@ function DetailsPopup({
   const onGenrateQuestions = async () => {
     setLoading(true);
 
-    const data = {
-      name: name.trim(),
-      objective: objective.trim(),
-      number: numQuestions,
-      context: uploadedDocumentContext,
-    };
+    try {
+      const data = {
+        name: name.trim(),
+        objective: objective.trim(),
+        number: numQuestions,
+        context: uploadedDocumentContext,
+      };
 
-    const generatedQuestions = (await axios.post("/api/generate-interview-questions", data)) as any;
+      const generatedQuestions = (await axios.post("/api/generate-interview-questions", data)) as any;
 
-    const generatedQuestionsResponse = JSON.parse(generatedQuestions?.data?.response);
+      const generatedQuestionsResponse = JSON.parse(generatedQuestions?.data?.response);
 
-    const updatedQuestions = generatedQuestionsResponse.questions.map((question: Question) => ({
-      id: uuidv4(),
-      question: question.question.trim(),
-      follow_up_count: 1,
-    }));
+      const updatedQuestions = generatedQuestionsResponse.questions.map((question: Question) => ({
+        id: uuidv4(),
+        question: question.question.trim(),
+        follow_up_count: 1,
+      }));
 
-    const updatedInterviewData = {
-      ...interviewData,
-      name: name.trim(),
-      objective: objective.trim(),
-      questions: updatedQuestions,
-      interviewer_id: selectedInterviewer,
-      question_count: Number(numQuestions),
-      time_duration: duration,
-      description: generatedQuestionsResponse.description,
-      is_anonymous: isAnonymous,
-    };
-    setInterviewData(updatedInterviewData);
+      const updatedInterviewData = {
+        ...interviewData,
+        name: name.trim(),
+        objective: objective.trim(),
+        questions: updatedQuestions,
+        interviewer_id: selectedInterviewer,
+        question_count: Number(numQuestions),
+        time_duration: duration,
+        description: generatedQuestionsResponse.description,
+        is_anonymous: isAnonymous,
+      };
+      setInterviewData(updatedInterviewData);
+      setProceed(true);
+    } catch (error) {
+      console.error("Error generating interview questions:", error);
+      toast.error("Failed to generate questions. Please check your OpenAI API key or use Manual creation.");
+      setIsClicked(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onManual = () => {
@@ -113,6 +124,8 @@ function DetailsPopup({
       is_anonymous: isAnonymous,
     };
     setInterviewData(updatedInterviewData);
+    setProceed(true);
+    setLoading(false);
   };
 
   useEffect(() => {

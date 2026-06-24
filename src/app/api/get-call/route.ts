@@ -38,6 +38,18 @@ export async function POST(req: Request) {
   };
   const result = await generateInterviewAnalytics(payload);
 
+  if (result.error) {
+    logger.error("Failed to generate interview analytics: " + result.error);
+    return NextResponse.json(
+      {
+        callResponse,
+        analytics: null,
+        error: result.error,
+      },
+      { status: 200 },
+    );
+  }
+
   const analytics = result.analytics;
 
   await ResponseService.saveResponse(

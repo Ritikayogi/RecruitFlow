@@ -3,15 +3,25 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 const supabase = createClientComponentClient();
 
 const normalizeInterviewPayload = (payload: any) => {
-  const id = payload?.interviewer_id;
-  if (id === undefined || id === null) {
-    return payload;
-  }
-  if (String(id) === "0") {
-    return { ...payload, interviewer_id: null };
+  const normalized = { ...payload };
+
+  if (
+    normalized.interviewer_id === undefined ||
+    normalized.interviewer_id === null ||
+    String(normalized.interviewer_id) === "0"
+  ) {
+    normalized.interviewer_id = null;
   }
 
-  return payload;
+  if (normalized.organization_id === "") {
+    normalized.organization_id = null;
+  }
+
+  if (normalized.user_id === "") {
+    normalized.user_id = null;
+  }
+
+  return normalized;
 };
 
 const getAllInterviews = async (userId: string, organizationId: string) => {

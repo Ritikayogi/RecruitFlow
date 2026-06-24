@@ -30,14 +30,14 @@ function PopupLoader() {
       </div>
       <a
         className="flex flex-row justify-center align-middle mt-3"
-        href="https://folo-up.co/"
+        href="#"
         target="_blank"
         rel="noopener noreferrer"
       >
         <div className="text-center text-md font-semibold mr-2">
           Powered by{" "}
           <span className="font-bold">
-            Folo<span className="text-indigo-600">Up</span>
+            Recruit<span className="text-indigo-600">Flow</span>
           </span>
         </div>
         <ArrowUpRightSquareIcon className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-indigo-500" />
@@ -58,14 +58,14 @@ function PopUpMessage({ title, description, image }: PopupProps) {
       </div>
       <a
         className="flex flex-row justify-center align-middle mt-3"
-        href="https://folo-up.co/"
+        href="#"
         target="_blank"
         rel="noopener noreferrer"
       >
         <div className="text-center text-md font-semibold mr-2">
           Powered by{" "}
           <span className="font-bold">
-            Folo<span className="text-indigo-600">Up</span>
+            Recruit<span className="text-indigo-600">Flow</span>
           </span>
         </div>
         <ArrowUpRightSquareIcon className="h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-indigo-500" />
@@ -137,8 +137,8 @@ function InterviewInterface({ params }: Props) {
         </div>
         <div className="text-center text-md font-semibold mr-2 my-5">
           Powered by{" "}
-          <a className="font-bold underline" href="www.folo-up.co" target="_blank" rel="noreferrer">
-            Folo<span className="text-indigo-600">Up</span>
+          <a className="font-bold underline" href="#" target="_blank" rel="noreferrer">
+            Recruit<span className="text-indigo-600">Flow</span>
           </a>
         </div>
       </div>
