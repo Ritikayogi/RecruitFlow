@@ -9,19 +9,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
 
-  if (
-    !Retell.verify(
-      JSON.stringify(req.body),
-      apiKey,
-      req.headers.get("x-retell-signature") as string,
-    )
-  ) {
+  const rawBody = await req.text();
+  const signature = req.headers.get("x-retell-signature") || "";
+
+  if (!Retell.verify(rawBody, apiKey, signature)) {
     console.error("Invalid signature");
 
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  const { event, call } = req.body as unknown as { event: string; call: any };
+  const body = JSON.parse(rawBody);
+  const { event, call } = body;
 
   switch (event) {
     case "call_started":
