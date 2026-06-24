@@ -55,18 +55,33 @@ function CallInfo({ call_id, onDeleteResponse, onCandidateStatusChange }: CallPr
   const [candidateStatus, setCandidateStatus] = useState<string>("");
   const [interviewId, setInterviewId] = useState<string>("");
   const [tabSwitchCount, setTabSwitchCount] = useState<number>();
+  const [openaiError, setOpenaiError] = useState<string>("");
 
   useEffect(() => {
-    const fetchResponses = async () => {
+    const loadCallData = async () => {
       setIsLoading(true);
       setCall(undefined);
       setEmail("");
       setName("");
+      setOpenaiError("");
 
       try {
-        const response = await axios.post("/api/get-call", { id: call_id });
-        setCall(response.data.callResponse);
-        setAnalytics(response.data.analytics);
+        const [getCallResponse, dbResponse] = await Promise.all([
+          axios.post("/api/get-call", { id: call_id }),
+          ResponseService.getResponseByCallId(call_id),
+        ]);
+
+        setCall(getCallResponse.data.callResponse);
+        setAnalytics(getCallResponse.data.analytics);
+        if (getCallResponse.data.error) {
+          setOpenaiError(getCallResponse.data.error);
+        }
+
+        setEmail(dbResponse.email);
+        setName(dbResponse.name);
+        setCandidateStatus(dbResponse.candidate_status);
+        setInterviewId(dbResponse.interview_id);
+        setTabSwitchCount(dbResponse.tab_switch_count);
       } catch (error) {
         console.error(error);
       } finally {
@@ -74,28 +89,7 @@ function CallInfo({ call_id, onDeleteResponse, onCandidateStatusChange }: CallPr
       }
     };
 
-    fetchResponses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [call_id]);
-
-  useEffect(() => {
-    const fetchEmail = async () => {
-      setIsLoading(true);
-      try {
-        const response = await ResponseService.getResponseByCallId(call_id);
-        setEmail(response.email);
-        setName(response.name);
-        setCandidateStatus(response.candidate_status);
-        setInterviewId(response.interview_id);
-        setTabSwitchCount(response.tab_switch_count);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchEmail();
+    loadCallData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [call_id]);
 
@@ -158,6 +152,25 @@ function CallInfo({ call_id, onDeleteResponse, onCandidateStatusChange }: CallPr
         </div>
       ) : (
         <>
+          {openaiError && (
+            <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-4 rounded-xl shadow-sm">
+              <div className="flex">
+                <div className="flex-shrink-0 my-auto">
+                  <svg className="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-semibold text-amber-800">
+                    OpenAI Quota Exceeded
+                  </h3>
+                  <div className="mt-1 text-xs text-amber-700">
+                    The overall hiring score, feedback, and question analyses could not be generated because the configured OpenAI API key has run out of credits or exceeded its quota. Please top up your OpenAI billing credits to restore automated analysis.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="bg-slate-200 rounded-2xl min-h-[120px] p-4 px-5 y-3">
             <div className="flex flex-col justify-between bt-2">
               {/* <p className="font-semibold my-2 ml-2">
@@ -361,7 +374,11 @@ function CallInfo({ call_id, onDeleteResponse, onCandidateStatusChange }: CallPr
                   <p className="my-auto">User Sentiment: </p>
                   <p className="font-medium my-auto">
                     {call?.call_analysis?.user_sentiment === undefined ? (
-                      <Skeleton className="w-[200px] h-[20px]" />
+                      isLoading ? (
+                        <Skeleton className="w-[100px] h-[20px]" />
+                      ) : (
+                        "N/A"
+                      )
                     ) : (
                       call?.call_analysis?.user_sentiment
                     )}
@@ -385,7 +402,11 @@ function CallInfo({ call_id, onDeleteResponse, onCandidateStatusChange }: CallPr
                   <div className="font-medium  ">
                     <span className="font-normal">Call Summary: </span>
                     {call?.call_analysis?.call_summary === undefined ? (
-                      <Skeleton className="w-[200px] h-[20px]" />
+                      isLoading ? (
+                        <Skeleton className="w-[200px] h-[20px]" />
+                      ) : (
+                        "No summary available from Retell."
+                      )
                     ) : (
                       call?.call_analysis?.call_summary
                     )}
