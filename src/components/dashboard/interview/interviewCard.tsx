@@ -74,8 +74,12 @@ function InterviewCard({ name, interviewerId, id, url, readableSlug }: Props) {
   }, []);
 
   const copyToClipboard = () => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const textToCopy = readableSlug
+      ? `${origin}/call/${readableSlug}`
+      : `${origin}/call/${id}`;
     navigator.clipboard
-      .writeText(readableSlug ? `${base_url}/call/${readableSlug}` : (url as string))
+      .writeText(textToCopy)
       .then(
         () => {
           setCopied(true);
@@ -96,7 +100,8 @@ function InterviewCard({ name, interviewerId, id, url, readableSlug }: Props) {
   const handleJumpToInterview = (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
-    const interviewUrl = readableSlug ? `/call/${readableSlug}` : `/call/${url}`;
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const interviewUrl = readableSlug ? `${origin}/call/${readableSlug}` : `${origin}/call/${id}`;
     window.open(interviewUrl, "_blank");
   };
 

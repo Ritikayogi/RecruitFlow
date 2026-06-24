@@ -17,7 +17,7 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (webpackConfig, { webpack }) => {
+  webpack: (webpackConfig, { webpack, isServer, nextRuntime }) => {
     webpackConfig.plugins.push(
       // Remove node: from import specifiers, because Next.js does not yet support node: scheme
       // https://github.com/vercel/next.js/issues/28774
@@ -25,6 +25,16 @@ const nextConfig = {
         resource.request = resource.request.replace(/^node:/, "");
       }),
     );
+
+    if (isServer) {
+      webpackConfig.output.globalObject = "this";
+    }
+
+    if (nextRuntime === "edge") {
+      if (webpackConfig.optimization) {
+        webpackConfig.optimization.splitChunks = false;
+      }
+    }
 
     return webpackConfig;
   },

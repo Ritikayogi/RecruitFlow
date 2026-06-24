@@ -8,8 +8,9 @@ const base_url = process.env.NEXT_PUBLIC_LIVE_URL;
 export async function POST(req: Request) {
   try {
     const url_id = nanoid();
-    const url = `${base_url}/call/${url_id}`;
     const body = await req.json();
+    const origin = req.headers.get("origin") || base_url || "http://localhost:3001";
+    const url = `${origin}/call/${url_id}`;
 
     logger.info("create-interview request received");
 
