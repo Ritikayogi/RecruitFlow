@@ -1,19 +1,19 @@
 # Contributing
 
-Thanks for considering contributing to FoloUp!
+Thanks for considering contributing to RecruitFlow!
 
 ## Opening issues
 
-If you find a bug, please feel free to [open an issue](https://github.com/FoloUp/FoloUp/issues).
+If you find a bug, please feel free to [open an issue](https://github.com/Ritikayogi/RecruitFlow/issues).
 
 ## Fixing bugs
 
 Here’s a quick guide:
 
-1. [Fork this repository](https://github.com/FoloUp/FoloUp/fork) and then clone it locally:
+1. [Fork this repository](https://github.com/Ritikayogi/RecruitFlow/fork) and then clone it locally:
 
 ```bash
-git clone https://github.com/FoloUp/FoloUp
+git clone https://github.com/Ritikayogi/RecruitFlow.git
 ```
 
 2. Create a topic branch for your changes:
@@ -32,4 +32,4 @@ git push origin fix-for-that-thing
 
 ## Adding new features
 
-Thinking of adding a new feature? [Open an issue](https://github.com/FoloUp/FoloUp/issues) and let’s design it together.
+Thinking of adding a new feature? [Open an issue](https://github.com/Ritikayogi/RecruitFlow/issues) and let’s design it together.
