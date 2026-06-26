@@ -13,6 +13,8 @@ export interface Response {
   analytics: any;
   candidate_status: string;
   tab_switch_count: number;
+  no_face_count: number | null;
+  multi_face_count: number | null;
 }
 
 export interface Analytics {

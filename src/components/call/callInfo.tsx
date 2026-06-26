@@ -55,6 +55,8 @@ function CallInfo({ call_id, onDeleteResponse, onCandidateStatusChange }: CallPr
   const [candidateStatus, setCandidateStatus] = useState<string>("");
   const [interviewId, setInterviewId] = useState<string>("");
   const [tabSwitchCount, setTabSwitchCount] = useState<number>();
+  const [noFaceCount, setNoFaceCount] = useState<number>();
+  const [multiFaceCount, setMultiFaceCount] = useState<number>();
   const [openaiError, setOpenaiError] = useState<string>("");
 
   useEffect(() => {
@@ -82,6 +84,8 @@ function CallInfo({ call_id, onDeleteResponse, onCandidateStatusChange }: CallPr
         setCandidateStatus(dbResponse.candidate_status);
         setInterviewId(dbResponse.interview_id);
         setTabSwitchCount(dbResponse.tab_switch_count);
+        setNoFaceCount(dbResponse.no_face_count);
+        setMultiFaceCount(dbResponse.multi_face_count);
       } catch (error) {
         console.error(error);
       } finally {
@@ -188,11 +192,35 @@ function CallInfo({ call_id, onDeleteResponse, onCandidateStatusChange }: CallPr
                     <ArrowLeft className="mr-2" />
                     <p className="text-sm font-semibold">Back to Summary</p>
                   </button>
-                  {tabSwitchCount && tabSwitchCount > 0 && (
-                    <p className="text-sm font-semibold text-red-500 bg-red-200 rounded-sm px-2 py-1">
-                      Tab Switching Detected
-                    </p>
-                  )}
+                  <div className="flex flex-row gap-2 flex-wrap">
+                    {((tabSwitchCount && tabSwitchCount > 0) || 
+                      (noFaceCount && noFaceCount > 0) || 
+                      (multiFaceCount && multiFaceCount > 0)) ? (
+                      <>
+                        {tabSwitchCount && tabSwitchCount > 0 && (
+                          <span className="text-xs font-semibold text-red-600 bg-red-100 border border-red-200 rounded-full px-2.5 py-1">
+                            💻 Tab Switches: {tabSwitchCount}
+                          </span>
+                        )}
+                        {noFaceCount && noFaceCount > 0 && (
+                          <span className="text-xs font-semibold text-red-600 bg-red-100 border border-red-200 rounded-full px-2.5 py-1">
+                            👤 No Face: {noFaceCount}
+                          </span>
+                        )}
+                        {multiFaceCount && multiFaceCount > 0 && (
+                          <span className="text-xs font-semibold text-red-600 bg-red-100 border border-red-200 rounded-full px-2.5 py-1">
+                            👥 Multi Face: {multiFaceCount}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      tabSwitchCount !== undefined && (
+                        <span className="text-xs font-semibold text-green-600 bg-green-100 border border-green-200 rounded-full px-2.5 py-1">
+                          ✓ Proctoring: No issues detected
+                        </span>
+                      )
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col justify-between gap-3 w-full">

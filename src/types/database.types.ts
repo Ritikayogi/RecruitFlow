@@ -198,6 +198,8 @@ export type Database = {
           is_viewed: boolean | null;
           name: string | null;
           tab_switch_count: number | null;
+          no_face_count: number | null;
+          multi_face_count: number | null;
         };
         Insert: {
           analytics?: Json | null;
@@ -214,6 +216,8 @@ export type Database = {
           is_viewed?: boolean | null;
           name?: string | null;
           tab_switch_count?: number | null;
+          no_face_count?: number | null;
+          multi_face_count?: number | null;
         };
         Update: {
           analytics?: Json | null;
@@ -230,6 +234,8 @@ export type Database = {
           is_viewed?: boolean | null;
           name?: string | null;
           tab_switch_count?: number | null;
+          no_face_count?: number | null;
+          multi_face_count?: number | null;
         };
         Relationships: [
           {

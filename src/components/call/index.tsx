@@ -29,6 +29,7 @@ import MiniLoader from "../loaders/mini-loader/miniLoader";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle } from "../ui/card";
 import { TabSwitchWarning, useTabSwitchPrevention } from "./tabSwitchPrevention";
+import { useFaceDetection } from "./useFaceDetection";
 
 const webClient = new RetellWebClient();
 
@@ -65,7 +66,11 @@ function Call({ interview }: InterviewProps) {
   const [isOldUser, setIsOldUser] = useState<boolean>(false);
   const [callId, setCallId] = useState<string>("");
   const { tabSwitchCount } = useTabSwitchPrevention();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const { noFaceCount, multiFaceCount, isModelLoading, currentFaceCount } = useFaceDetection(isCalling && !!cameraStream, videoRef);
   const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [interviewerImg, setInterviewerImg] = useState("");
   const [interviewTimeDuration, setInterviewTimeDuration] = useState<string>("1");
@@ -204,6 +209,20 @@ function Call({ interview }: InterviewProps) {
     if (OldUser) {
       setIsOldUser(true);
     } else {
+      // Request camera access for proctoring
+      let stream: MediaStream | null = null;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 320, height: 240, frameRate: { ideal: 10, max: 15 } }
+        });
+        setCameraStream(stream);
+      } catch (error) {
+        console.error("Failed to access camera:", error);
+        toast.error("Camera access is required for proctoring. Please enable camera permissions in your browser.");
+        setLoading(false);
+        return;
+      }
+
       const registerCallResponse: registerCallResponseType = await axios.post(
         "/api/register-call",
         { dynamic_data: data, interviewer_id: interview?.interviewer_id },
@@ -248,27 +267,66 @@ function Call({ interview }: InterviewProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interview.interviewer_id]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (isEnded) {
+    if (isEnded && !hasSaved) {
+      setHasSaved(true);
       const updateInterview = async () => {
         await ResponseService.saveResponse(
-          { is_ended: true, tab_switch_count: tabSwitchCount },
+          { 
+            is_ended: true, 
+            tab_switch_count: tabSwitchCount,
+            no_face_count: noFaceCount,
+            multi_face_count: multiFaceCount
+          },
           callId,
         );
       };
 
       updateInterview();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEnded]);
+  }, [isEnded, tabSwitchCount, noFaceCount, multiFaceCount, callId, hasSaved]);
+
+  useEffect(() => {
+    if (isEnded && cameraStream) {
+      cameraStream.getTracks().forEach((track) => track.stop());
+      setCameraStream(null);
+    }
+  }, [isEnded, cameraStream]);
+
+  useEffect(() => {
+    if (cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+    }
+  }, [cameraStream, videoRef.current]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       {isStarted && <TabSwitchWarning />}
       <div className="bg-white rounded-md md:w-[80%] w-[90%]">
-        <Card className="h-[88vh] rounded-lg border-2 border-b-4 border-r-4 border-black text-xl font-bold transition-all  md:block dark:border-white ">
-          <div>
+        <Card className="h-[88vh] rounded-lg border-2 border-b-4 border-r-4 border-black text-xl font-bold transition-all  md:block dark:border-white relative overflow-hidden">
+          <div className="relative h-full">
+            {isStarted && !isEnded && cameraStream && (
+              <div 
+                className={`absolute bottom-16 right-4 z-50 rounded-lg overflow-hidden border-2 shadow-lg w-[160px] h-[120px] bg-black transition-all duration-300 ${
+                  currentFaceCount === 0 || (currentFaceCount !== null && currentFaceCount > 1)
+                    ? "border-red-500 shadow-red-500/40 scale-105 animate-pulse"
+                    : "border-indigo-600 shadow-indigo-600/20"
+                }`}
+              >
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover scale-x-[-1]"
+                />
+                {isModelLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-white text-[10px] text-center px-1 font-normal">
+                    Loading AI proctor...
+                  </div>
+                )}
+              </div>
+            )}
             <div className="m-4 h-[15px] rounded-lg border-[1px]  border-black">
               <div
                 className=" bg-indigo-600 h-[15px] rounded-lg"
