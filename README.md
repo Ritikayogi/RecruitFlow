@@ -30,6 +30,7 @@ Here's a [loom](https://www.loom.com/share/762fd7d12001490bbfdcf3fac37ff173?sid=
 ## Initial Setup
 
 1. Clone the project.
+   
 
 ```bash
 git clone https://github.com/Ritikayogi/RecruitFlow.git
